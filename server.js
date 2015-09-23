@@ -11,10 +11,16 @@ var https_options = {
 	cert: cert
 };
 
-
+app.use(express.static('public'));
 app.get('/', function (req, res) {
   res.sendfile('public/index.html');
 });
+app.get('/circle',function (req, res) {
+
+  res.sendfile('public/circle.html');
+});
+
+
 
 var server = https.createServer(https_options, app).listen(5000, function () {
   var host = server.address().address;
