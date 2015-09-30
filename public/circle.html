@@ -8,19 +8,41 @@
 <script type="text/javascript" src="paperjs/docs/assets/js/paper.js"></script>
 <!-- Define inlined PaperScript associate it with myCanvas -->
 <script type="text/paperscript" canvas="myCanvas">
-	// Create a Paper.js Path to draw a line into it:
-	var path = new Path();
-	// Give the stroke a color
-	path.strokeColor = 'black';
-	var start = new Point(100, 100);
-	// Move to start and draw a line from there
-	path.moveTo(start);
-	// Note the plus operator on Point objects.
-	// PaperScript does that for us, and much more!
-	path.lineTo(start + [ 100, -50 ]);
+var tab=new Array();           
+               
+                for(var a=0;a<50;a++){
+                        var myCircle = new Path.Circle(new Point(100-(a*7.5), 5), 8);
+                        myCircle.fillColor = 'black';
+                        tab.push(myCircle);
+                }
+ 
+                //définie la destination
+                var vector = Point.random()*view.size;
+                vector=vector.normalize(Math.abs(2));
+		var vector2;
+ 
+ 
+                function onFrame(event) {
+                        for(var i=tab.length-1;i>=0;i--){
+                                if(i==0){
+                                        tab[0].translate(vector);
+                                }
+                                else{
+					vector2 = tab[i-1].position-tab[i].position;
+                                        tab[i].translate(vector2);      
+                                }
+                        }
+                }
+ 
+                function onMouseDown(event){                   
+                        vector = event.point-tab[0].position;
+                        vector=vector.normalize(Math.abs(2));
+                }
+
 </script>
 </head>
 <body>
-	<canvas id="myCanvas" resize></canvas>
+	<canvas id="myCanvas" style="width:100%;height:100%;background-color:#e9e9e9;" resize></canvas>
 </body>
 </html>
+
