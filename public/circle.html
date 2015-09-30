@@ -8,21 +8,37 @@
 <script type="text/javascript" src="paperjs/docs/assets/js/paper.js"></script>
 <!-- Define inlined PaperScript associate it with myCanvas -->
 <script type="text/paperscript" canvas="myCanvas">
-var tab=new Array();           
-               
+tab=new Array();           
+              var text = new PointText({
+		      point: new Point(30,30),
+		      justification: 'center',
+		      fontSize: 30,
+		      fillColor: 'black',
+		      content: 0
+	      });
+	      
+	      var textGameOver = new PointText({
+		      point: view.center,
+		      justification: 'center',
+		      fontSize: 60,
+		      fillColor: 'black'
+	      });
                 for(var a=0;a<50;a++){
-                        var myCircle = new Path.Circle(new Point(100-(a*7.5), 5), 8);
+                        var myCircle = new Path.Circle(new Point(100-(a*7.5), 5), 10);
                         myCircle.fillColor = 'black';
                         tab.push(myCircle);
                 }
  
                 //définie la destination
                 var vector = Point.random()*view.size;
-                vector=vector.normalize(Math.abs(2));
+                vector=vector.normalize(Math.abs(6));
 		var vector2;
+		pommeIs=false;
  
- 
+
                 function onFrame(event) {
+			popPomme();
+			var tabPrec=new Array();
                         for(var i=tab.length-1;i>=0;i--){
                                 if(i==0){
                                         tab[0].translate(vector);
@@ -31,18 +47,49 @@ var tab=new Array();
 					vector2 = tab[i-1].position-tab[i].position;
                                         tab[i].translate(vector2);      
                                 }
+                                tabPrec.push(tab[i].position);
+                        }
+                        if(tab[0].intersects(pomme)){
+			    pomme.remove();
+			    pommeIs=false;
+			    for(var b=tabPrec.length-10;b<tabPrec.length;b++){
+			    console.log(tabPrec.length);
+			    text.content= (tabPrec.length/10)-4;
+			      var circle = new Path.Circle( tabPrec[b]   , 10);
+			      circle.fillColor = 'black';
+			      tab.push(circle);
+			      popPomme();
+			    }
                         }
                 }
  
                 function onMouseDown(event){                   
                         vector = event.point-tab[0].position;
-                        vector=vector.normalize(Math.abs(2));
+                        vector=vector.normalize(Math.abs(6));
                 }
-
+                
+                
+                
+                function snakeUpper(){
+		  for(var b=0;b<10;b++){
+		    var myCircle = new Path.Circle((tab[tab.length].position),10);
+                    myCircle.fillColor = 'black';
+                    tab.push(myCircle);
+		  }
+                }
+                
+                function popPomme(){
+		   if(pommeIs==false){
+		      pomme = new Path.Circle(Point.random()*view.size,8);
+		      pomme.fillColor = 'red';
+		      pommeIs=true;
+                   }
+                }
 </script>
 </head>
-<body>
-	<canvas id="myCanvas" style="width:100%;height:100%;background-color:#e9e9e9;" resize></canvas>
+<body style="background-color:black;">
+	<h1 style="color:white;text-align:center">Snake</h1>
+	<canvas id="myCanvas" style="width:95%;height:95%;background-color:#e9e9e9;margin: 0% 2.5% 0% 2.5%;" resize></canvas>
 </body>
 </html>
 
