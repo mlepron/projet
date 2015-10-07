@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
 });
 app.get('/circle',function (req, res) {
 
-  res.sendfile('public/circle.html');
+  res.sendfile('public/circle2.html');
 });
 
 
@@ -27,5 +27,45 @@ var server = https.createServer(https_options, app).listen(5000, function () {
   var port = server.address().port;
 
   console.log('Example app listening at http://%s:%s', host, port);
+});
+
+
+// Chargement de socket.io
+var io = require('socket.io').listen(server);
+
+
+tab=new Array(); 
+
+// Quand on client se connecte, on le note dans la console
+io.on('connection', function(socket){
+  console.log('a user connected');
+  
+  for(var a=0;a<50;a++){
+      tab.push([100-(a*7.5), 5]);
+      console.log(tab[a]);
+  }
+  
+  
+  
+  
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+  socket.on('clickevent',function(point){
+    console.log(point);
+  });
+  
+  setInterval(function(){
+      
+    
+    
+    
+    
+    
+    
+    
+    io.emit('fram', tab);
+    },500);
+  
 });
 
