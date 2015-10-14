@@ -14,32 +14,22 @@
         </script>
 <script type="text/paperscript" canvas="myCanvas">
 var socket = io();
+var begin=false;
+tab=new Array(); 
+	    socket.on('fram', function(msg){
+		
+		  tab=new Array(); 
+		  for(var a=0;a<msg.length;a++){
+		      var circle = new Path.Circle(new Point(msg[a][0],msg[a][1]), 10);
+		      circle.fillColor='black';
+		      console.log(circle.position);
+		      tab.push(circle);
+		  }
+		  
+		  begin=true;
+		
+	    });
 
-
-socket.on('fram', function(msg){
-    console.log(msg);
-  });
-
-tab=new Array();           
-              var text = new PointText({
-		      point: new Point(30,30),
-		      justification: 'center',
-		      fontSize: 30,
-		      fillColor: 'black',
-		      content: 0
-	      });
-	      
-	      var textGameOver = new PointText({
-		      point: view.center,
-		      justification: 'center',
-		      fontSize: 60,
-		      fillColor: 'black'
-	      });
-                for(var a=0;a<50;a++){
-                        var myCircle = new Path.Circle(new Point(100-(a*7.5), 5), 10);
-                        myCircle.fillColor = 'black';
-                        tab.push(myCircle);
-                }
  
                 //définie la destination
                 var vector = Point.random()*view.size;
@@ -47,8 +37,8 @@ tab=new Array();
 		var vector2;
 		pommeIs=false;
  
-
-                function onFrame(event) {
+		function onFrame(event) {
+		    if(begin){
 			popPomme();
 			var tabPrec=new Array();
                         for(var i=tab.length-1;i>=0;i--){
@@ -73,7 +63,9 @@ tab=new Array();
 			      popPomme();
 			    }
                         }
+                    }    
                 }
+                
  
                 function onMouseDown(event){                   
                         vector = event.point-tab[0].position;
@@ -102,6 +94,23 @@ tab=new Array();
 		      pommeIs=true;
                    }
                 }
+                
+                
+                
+              var text = new PointText({
+		      point: new Point(30,30),
+		      justification: 'center',
+		      fontSize: 30,
+		      fillColor: 'black',
+		      content: 0
+	      });
+	      
+	      var textGameOver = new PointText({
+		      point: view.center,
+		      justification: 'center',
+		      fontSize: 60,
+		      fillColor: 'black'
+	      });
 </script>
 </head>
 <body style="background-color:black;">
