@@ -18,7 +18,7 @@ app.get('/', function (req, res) {
 });
 app.get('/circle',function (req, res) {
 
-  res.sendfile('public/circle2.html');
+  res.sendfile('public/circle.html');
 });
 
 
@@ -33,41 +33,90 @@ var server = https.createServer(https_options, app).listen(5000, function () {
 
 // Chargement de socket.io
 var io = require('socket.io').listen(server);
- 
+var model = require('./modele');
+
+point = model.Point;
+var snake = model.Snake;
+
+var postete = new point(0,0);
+var firstdirection = new point(Math.random() *1200, Math.random() * 500); 
+
+tab=new Array();
+tab.push(new point(0,0), new point(0,0)  ,new point(0,0) );
+var snak = new snake(10,postete,tab);
+snak.normalize(firstdirection);
+
+var radius = 30;
+
+postrajetx = [1000];
+postrajety = [1000];
+
+var j=0;
+var i =0;
+increPos = 6;
+var corps=0;
+var newpointis =false;
 
 // Quand on client se connecte, on le note dans la console
 io.on('connection', function(socket){
   console.log('a user connected');
   
   
-  tab=new Array();
-  for(var a=0;a<50;a++){
-      tab.push([100-(a*7.5), 5]);
-      console.log(tab[a]);
-  }
+  
+
   io.emit('snakebegin', tab);
   
   
-  function normalize(x1,y1,x2,y2){
-    return Math.sqrt((y2-y1)^2+(x2-x1)^2);
-  }
-  
-  function deplacement(pAct,pVis,dist){
-    var norm = normalize(pAct[0],pVis[0],pAct[0],pVis[0]);
-    
-  }
+ 
   
   
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
   socket.on('clickevent',function(point){
-    console.log(point);
+    console.log(point[1]+" ; "+point[2]);
+    newx=point[1];
+    newy=point[2];
+    newpointis=true;
+    
   });
-  io.emit('fram', tab);
-  setInterval(function(){
+  
+  setInterval(onFrame,80);
+  
+  function onFrame(){
+    if(newpointis==true){
+    
+	var newpoint=new point(newx,newy);
+	newpointis=false; 
+	snak.normalize(newpoint);
+    }
+    snak.update();
+    
+    postrajetx.push(snak.postete.x);
+    postrajety.push(snak.postete.y);
+    
+    j=0;
+    while(j< snak.tabPosRond.length){
       
-    },500);
+      snak.tabPosRond[j].x = postrajetx[i - increPos];
+      snak.tabPosRond[j].y = postrajety[i - increPos];
+      console.log(snak.tabPosRond[1]);
+      increPos += 6;
+      j++
+    }
+    increPos += 6;
+    i++;
+    
+
+    jsonRes = JSON.stringify({
+      'postete': snak.postete,
+      'tab': snak.tabPosRond
+    });
+    
+    io.emit('fram', jsonRes  );
+    
+    
+  }
   
 });
 
